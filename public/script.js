@@ -190,16 +190,28 @@ function sleep(ms) {
 var overplayPlayback = document.getElementById('overlay-playback');
 
 async function startPlayback() {
- var images = [
+ var fedoraimages = [
 
 	    "https://upload.wikimedia.org/wikipedia/commons/5/54/Red_Fedora.svg", 
 	    "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fedora_hat.svg", 
 	    "https://upload.wikimedia.org/wikipedia/commons/6/69/Tux_Paint_blue_fedora.svg",
-	    "http://images.clipartpanda.com/fedora-clipart-fedora_yellow.svg",
+      "http://images.clipartpanda.com/fedora-clipart-fedora_yellow.svg",
+      "https://openclipart.org/download/233766/fez.svg"
 ]
-	
+  
+
+  var bowtieimages = [
+    "https://dumielauxepices.net/sites/default/files/drawn-bow-tie-pink-515822-5341957.svg",
+    "http://worldartsme.com/images/purple-bow-tie-clipart-1.jpg",
+    "https://www.clipartmax.com/png/middle/254-2542071_bowtie-svg-file-bowtie-svg-file.png",
+
+  ]
+  
   var e = document.getElementById("fedoraChoice");
-  var fedoraUrl = images[e.selectedIndex];
+  var fedoraUrl = fedoraimages[e.selectedIndex];
+
+  var b = document.getElementById("bowChoice");
+  var bowUrl = bowtieimages[b.selectedIndex];
 	
   let playbackCanvas = document.getElementById('overlay-playback');
   let playbackCanvas2d = playbackCanvas.getContext("2d");
@@ -218,7 +230,7 @@ async function startPlayback() {
 		      //       // var sctx = scanvas.getContext("2d");
 		      //
 	    
-	var wid =  distance(lastGlobalPositions[i][0], lastGlobalPositions[i][14]);
+  var wid =  distance(lastGlobalPositions[i][0], lastGlobalPositions[i][14]);
 		      //
 		      //
 		      //                   // FLIP DAT FEDORA PLZ
@@ -230,6 +242,15 @@ async function startPlayback() {
         playbackCanvas2d.drawImage(img, lastGlobalPositions[i][0][0] + (lastGlobalPositions[i][14][0] - lastGlobalPositions[i][0][0]) / 2 - 1.2 * wid / 2, lastGlobalPositions[i][16][1] - 1.1 *  wid, 1.5 * wid, 1.5 * wid);
     }
     img.src = fedoraUrl;
+
+
+    var bowtie = new Image();
+    bowtie.onload = function() {
+      var lipwid = distance(lastGlobalPositions[i][50], lastGlobalPositions[i][44]);
+      playbackCanvas2d.drawImage(bowtie, lastGlobalPositions[i][7][0] - lipwid / 2, lastGlobalPositions[i][7][1], lipwid, lipwid);
+
+    }
+    bowtie.src = bowUrl;
 
     await sleep(22);
     playbackCanvas2d.clearRect(0, 0, 400, 300);
