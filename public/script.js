@@ -143,10 +143,12 @@ function drawLoop() {
   if (ctrack.getCurrentPosition()) {
     // get points
     var positions = ctrack.getCurrentPosition();
+    // console.log(positions)
     globalPositions.push(positions);
 
     var parameters = ctrack.getCurrentParameters();
-    globalParameters.push(parameters)
+    console.log(parameters.join(","));
+    globalParameters.push(JSON.parse(JSON.stringify(parameters)));
 
     
     ctrack.draw(overlay);
@@ -166,11 +168,11 @@ function drawLoop() {
 }
 
 function stopVideo() {
+  mediaRecorder.stop();
+  lastGlobalPositions = JSON.parse(JSON.stringify(globalPositions));
+  lastGlobalParameters = JSON.parse(JSON.stringify(globalParameters));
   ctrack.stop();
   ctrack.reset();
-  mediaRecorder.stop();
-  lastGlobalPositions = globalPositions;
-  lastGlobalParameters = globalParameters;
   globalPositions = [];
   globalParameters = [];
 
@@ -253,6 +255,10 @@ var newAudioKey = null;
 function sendPoints() {
   let selectHat = document.getElementById("fedoraChoice");
   let hatId = selectHat.options[selectHat.selectedIndex].value;
+
+  console.log('(Zeroing-Out occurs before) IN SEND POINTS')
+  console.log(lastGlobalParameters)
+  console.log('(Zeroing-Out occurs before) IN SEND POINTS')
 
   db.ref('stories/').push({
     points: lastGlobalPositions,

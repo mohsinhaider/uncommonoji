@@ -41,7 +41,9 @@ function fetchStory() {
             xhr.send();
         });
 
-        drawPoints(storyPoints);
+        window.storyParameters = storyParameters;
+
+        drawPoints(storyPoints, storyParameters);
     });
 }
 
@@ -56,33 +58,14 @@ var images = [
     "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fedora_hat.svg"
 ];
   
-async function drawPoints(points) {
-    let fedoraUrl = null;
-    if (storyHatId > 0) {
-        fedoraUrl = images[storyHatId - 1];
-    }
-
+async function drawPoints(points, parameters) {
     let playbackCanvas = document.getElementById('overlay-playback');
     let playbackCanvas2d = playbackCanvas.getContext("2d");
     playbackCanvas2d.fillStyle = "#FF0000";
 
-    for (let i = 0; i < points.length; i++) {
-        for (let j = 0; j < points[i].length; j++) {
-          playbackCanvas2d.fillRect(points[i][j][0], points[i][j][1], 4, 4);
-        }
-
-        if (fedoraUrl) {
-            var img = new Image();  
-            img.onload = function() {
-                var wid =  distance(points[i][0], points[i][14]);
-                playbackCanvas2d.drawImage(img, points[i][0][0] + (points[i][14][0] - points[i][0][0]) / 2 - 1.2 * wid / 2, points[i][16][1] - 1.1 *  wid, 1.5 * wid, 1.5 * wid);
-            }
-            img.src = fedoraUrl;
-        }
-
-        await sleep(22);
-        playbackCanvas2d.clearRect(0, 0, 400, 300);
-    }
+    const tracker = PlaybackTracker(points, parameters);
+    tracker.start(22);
+    initDrawGuest(playbackCanvas, tracker);
 }
 
 function distance(p1, p2) {
