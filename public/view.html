@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>Animoji - View Stories</title>
+		<meta charset="utf-8">
+		<link href="bootstrap.min.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" href="style.css">
+		<script src="https://www.gstatic.com/firebasejs/5.8.3/firebase-app.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/5.8.3/firebase-database.js"></script>
+		<script src="https://www.gstatic.com/firebasejs/5.8.3/firebase-storage.js"></script>
+	</head>
+	<body>
+		<div id="content">
+			<div id="review-container">
+				<h3>Play Story</h3>
+				<div id="container">
+					<canvas id="overlay-playback" width="400" height="300" style="border:1px solid #000000;"></canvas>
+				</div>
+				<br>
+            </div>
+            <input id="storybox" type="text" placeholder="Story ID..."/>
+            <button type="submit" onclick="fetchStory()">Submit</button>
+			<br>
+			<br>
+		</div>
+
+	    <script src="https://cdn.glitch.com/ef06bfdc-f2e0-4749-ab2e-7ff31c0128c1%2Fclmtrackr.js?1529372934722"></script>
+        <script src="https://cdn.glitch.com/ef06bfdc-f2e0-4749-ab2e-7ff31c0128c1%2Futils.js?1529372166157"></script>
+		<script src="playscript.js"></script>
+	</body>
+</html>

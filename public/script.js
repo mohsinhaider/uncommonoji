@@ -7,6 +7,9 @@ var overlayCC = overlay.getContext('2d');
 var lastGlobalPositions = [];
 var globalPositions = [];
 
+var lastGlobalParameters = [];
+var globalParameters = [];
+
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
 window.URL = window.URL || window.webkitURL || window.msURL || window.mozURL;
 // set up video
@@ -85,9 +88,20 @@ function gumFail() {
 /*********** Code for face tracking *********/
 var ctrack = new clm.tracker();
 ctrack.init();
+
 var trackingStarted = false;
+var mediaRecorder = null;
+var lastAudio = null;
+var lastAudioBlob = null;
 
 function startVideo() {
+  globalParameters = [];
+  globalPositions = [];
+
+  mediaRecorder = null;
+  lastAudio = null;
+  lastAudioBlob = null;
+
   // start video
   vid.play();
   // start tracking
@@ -100,9 +114,6 @@ function startVideo() {
   // drawLoop()
 }
 
-var mediaRecorder = null;
-var lastAudio = null;
-
 function recordAudio() {
   navigator.mediaDevices.getUserMedia({ audio: true })
   .then(stream => {
@@ -110,22 +121,18 @@ function recordAudio() {
     mediaRecorder.start();
     drawLoop();
 
-    console.log("Log1");
-
     const audioChunks = [];
     mediaRecorder.addEventListener("dataavailable", event => {
       audioChunks.push(event.data);
     });
 
-    console.log("Log 2");
-
     mediaRecorder.addEventListener("stop", () => {
       const audioBlob = new Blob(audioChunks);
       const audioUrl = URL.createObjectURL(audioBlob);
       const audio = new Audio(audioUrl);
+
+      lastAudioBlob = audioBlob.slice();
       lastAudio = audio.cloneNode();
-      console.log("Logging Audio object");
-      console.log(lastAudio);
     });
   });
 }
@@ -136,10 +143,14 @@ function drawLoop() {
   if (ctrack.getCurrentPosition()) {
     // get points
     var positions = ctrack.getCurrentPosition();
-    
     globalPositions.push(positions);
+
+    var parameters = ctrack.getCurrentParameters();
+    globalParameters.push(parameters)
+
     
     ctrack.draw(overlay);
+
     
     var pupilLeft = positions[27];
     var pupilRight = positions[32];
@@ -154,14 +165,19 @@ function drawLoop() {
   }
 }
 
-
 function stopVideo() {
   ctrack.stop();
   ctrack.reset();
   mediaRecorder.stop();
   lastGlobalPositions = globalPositions;
-  console.log(globalPositions);
+  lastGlobalParameters = globalParameters;
   globalPositions = [];
+  globalParameters = [];
+
+  let playbackCanvas = document.getElementById('overlay-playback');
+  let playbackCanvas2d = playbackCanvas.getContext("2d");
+  playbackCanvas2d.fillStyle = "#FF0000";
+  playbackCanvas2d.fillRect(lastGlobalPositions[0][0], lastGlobalPositions[0][1], 4, 4);
 }
 
 function sleep(ms) {
@@ -171,7 +187,6 @@ function sleep(ms) {
 var overplayPlayback = document.getElementById('overlay-playback');
 
 async function startPlayback() {
-  console.log("Hey there!");
   let playbackCanvas = document.getElementById('overlay-playback');
   let playbackCanvas2d = playbackCanvas.getContext("2d");
   playbackCanvas2d.fillStyle = "#FF0000";
@@ -184,4 +199,40 @@ async function startPlayback() {
     await sleep(22);
     playbackCanvas2d.clearRect(0, 0, 400, 300);
   }
+}
+
+const config = {
+  apiKey: "AIzaSyBgsxxtDg89j2EKlO4qcUrJlPQJ_G4MkCM",
+  authDomain: "uncommonfacedb.firebaseapp.com",
+  databaseURL: "https://uncommonfacedb.firebaseio.com",
+  projectId: "uncommonfacedb",
+  storageBucket: "uncommonfacedb.appspot.com",
+  messagingSenderId: "917895134735"
+};
+
+const FirebaseApp = firebase.initializeApp(config);
+const db = FirebaseApp.database();
+const store = FirebaseApp.storage();
+
+var newAudioKey = null;
+
+function sendPoints() {
+
+  db.ref('stories/').push({
+    points: lastGlobalPositions,
+    parameters: lastGlobalParameters
+  }).then((res) => {
+    newAudioKey = res.key;
+
+    let storageRef = store.ref();
+    let audioRef = storageRef.child('audio/' + newAudioKey.slice(1));
+
+    audioRef.put(lastAudioBlob).then(snapshot => {
+      console.log('[Animoji] Audio Blob successfully uploaded.');
+    });
+  });
+}
+
+function shareStory() {
+  alert("Share this Story Key: " + newAudioKey);
 }
