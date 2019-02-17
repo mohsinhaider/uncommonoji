@@ -184,9 +184,22 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+
+
+
 var overplayPlayback = document.getElementById('overlay-playback');
 
 async function startPlayback() {
+ var images = [
+      "https://upload.wikimedia.org/wikipedia/commons/5/54/Red_Fedora.svg", 
+      "https://upload.wikimedia.org/wikipedia/commons/6/69/Tux_Paint_blue_fedora.svg",
+      "http://images.clipartpanda.com/fedora-clipart-fedora_yellow.svg",
+      "https://upload.wikimedia.org/wikipedia/commons/6/6b/Fedora_hat.svg"
+]
+  
+  var e = document.getElementById("fedoraChoice");
+  var fedoraUrl = images[e.selectedIndex - 1];
+  
   let playbackCanvas = document.getElementById('overlay-playback');
   let playbackCanvas2d = playbackCanvas.getContext("2d");
   playbackCanvas2d.fillStyle = "#FF0000";
@@ -196,10 +209,31 @@ async function startPlayback() {
     for (let j = 0; j < lastGlobalPositions[i].length; j++) {
       playbackCanvas2d.fillRect(lastGlobalPositions[i][j][0], lastGlobalPositions[i][j][1], 4, 4);
     }
+
+    var img = new Image();  
+    img.onload = function() {
+    var wid =  distance(lastGlobalPositions[i][0], lastGlobalPositions[i][14]);
+        playbackCanvas2d.drawImage(img, lastGlobalPositions[i][0][0] + (lastGlobalPositions[i][14][0] - lastGlobalPositions[i][0][0]) / 2 - 1.2 * wid / 2, lastGlobalPositions[i][16][1] - 1.1 *  wid, 1.5 * wid, 1.5 * wid);
+    }
+    img.src = fedoraUrl;
+
     await sleep(22);
     playbackCanvas2d.clearRect(0, 0, 400, 300);
   }
 }
+
+function distance(p1, p2) {
+    return Math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2);
+}
+
+
+// doesn't work 
+function flipHorizontally(context, around) {
+    context.translate(around, 0);
+    context.scale(-1, 1);
+    context.translate(-around, 0);
+}
+
 
 const config = {
   apiKey: "AIzaSyBgsxxtDg89j2EKlO4qcUrJlPQJ_G4MkCM",
@@ -217,10 +251,13 @@ const store = FirebaseApp.storage();
 var newAudioKey = null;
 
 function sendPoints() {
+  let selectHat = document.getElementById("fedoraChoice");
+  let hatId = selectHat.options[selectHat.selectedIndex].value;
 
   db.ref('stories/').push({
     points: lastGlobalPositions,
-    parameters: lastGlobalParameters
+    parameters: lastGlobalParameters,
+    hatId: parseInt(hatId) 
   }).then((res) => {
     newAudioKey = res.key;
 
