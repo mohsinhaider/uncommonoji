@@ -16,24 +16,26 @@
 	</head>
 	<body>
 		<div id="content">
-			<h2>Record your message</h2>
+			<h2>Create Story</h2>
 			<div id="container">
 				<video id="videoel" width="400" height="300" preload="auto" loop playsinline autoplay>
 				</video>
 				<canvas id="overlay" width="400" height="300"></canvas>
 			</div>
 			<br/>
-			<input class="btn" type="button" value="wait, loading video" disabled="disabled" onclick="startVideo()" id="startbutton"/>
-			<input class="btn" type="button" value="stop" onclick="stopVideo()" id="stopbutton"/>
+			<input class="btn" type="button" value="Loading..." disabled="disabled" onclick="startVideo()" id="startbutton"/>
+			<input class="btn" type="button" value="Stop Recording" onclick="stopVideo()" id="stopbutton"/>
 		
 			<br>
 			<br>
-			<h3>Play back your Audio</h3>
+			<h3>Review Story</h3>
 			<div id="container">
 				<canvas id="overlay-playback" width="400" height="300" style="border:1px solid #000000;"></canvas>
 			</div>
 			<br>
-			<input class="btn" type="button" value="start" onclick="startPlayback()" id="startplaybackbutton"/>
+			<input class="btn" type="button" value="Play" onclick="startPlayback()" id="startplaybackbutton"/>
+			<input class="btn" type="button" value="Publish" onclick="startPlayback()" id="startplaybackbutton"/>
+			<input class="btn" type="button" value="Share" onclick="startPlayback()" id="startplaybackbutton"/>
 			<br>
 			<br>
 		</div>

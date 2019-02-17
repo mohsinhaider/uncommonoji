@@ -25,7 +25,7 @@ vid.addEventListener('canplay', enablestart, false);
 /*********** Setup of video/webcam and checking for webGL support *********/
 function enablestart() {
   var startbutton = document.getElementById('startbutton');
-  startbutton.value = "start";
+  startbutton.value = "Record Story";
   startbutton.disabled = null;
 }
 
